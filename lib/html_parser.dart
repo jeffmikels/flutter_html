@@ -397,7 +397,7 @@ class HtmlRichTextParser extends StatelessWidget {
       } else if (!(parseContext.parentElement.children is List<Widget>)) {
         parseContext.parentElement.children.add(span);
       } else {
-        print('doing nothing');
+        // Doing nothing... we shouldn't ever get here
       }
       return;
     }
