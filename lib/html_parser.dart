@@ -314,10 +314,11 @@ class HtmlRichTextParser extends StatelessWidget {
           finalText = finalText.trimLeft();
         else if (parseContext.parentElement is TextSpan ||
             parseContext.parentElement is LinkTextSpan) {
-          String lastString = parseContext.parentElement.text ?? '';
-          if (!parseContext.parentElement.children.isEmpty) {
-            lastString = parseContext.parentElement.children.last.text;
+          var lastChild = parseContext.parentElement;
+          while (lastChild.children.isNotEmpty) {
+            lastChild = lastChild.children.last;
           }
+          String lastString = lastChild.text ?? '';
           if (lastString == '' ||
               lastString.endsWith(' ') ||
               lastString.endsWith('\n')) finalText = finalText.trimLeft();
@@ -1544,7 +1545,7 @@ class HtmlOldParser extends StatelessWidget {
         node.text = " ";
       }
 
-      String finalText = trimStringHtml(node.text);
+      String finalText = trimStringHtml(node.text) ?? '';
       //Temp fix for https://github.com/flutter/flutter/issues/736
       if (finalText.endsWith(" ")) {
         return Container(
