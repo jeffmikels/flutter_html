@@ -1,3 +1,117 @@
+# [1.0.0]
+* BREAKING CHANGES (see the [Migration Guide](https://github.com/Sub6Resources/flutter_html/wiki/1.0.0-Migration-Guide) for a full overview of breaking changes.):
+  * The default parser has been completely rewritten and the RichText parser has been removed.
+  * `useRichText` no longer is necessary (The new parser uses RichText under the hood)
+  * `customRender` now works for the default parser.
+* Adds support for `<audio>`, `<video>`, `<iframe>`, `<svg>`, `<ruby>`, `<rt>`, `<rp>`, `<sub>`, and `<sup>`
+* Adds support for over 20 CSS attributes when using the `style` parameter.
+* Fixes many many issues (see the list at [#122](https://github.com/Sub6Resources/flutter_html/pull/122))
+* The following parameters of `Html` have been removed and should no longer be used (see the migration guide):
+  * `useRichText`
+  * `padding`
+  * `backgroundColor`
+  * `defaultTextStyle`
+  * `renderNewlines`
+  * `customEdgeInsets`
+  * `customTextStyle`
+  * `blockSpacing`
+  * `customTextAlign`
+  * `linkStyle`
+  * `imageProperties`
+  * `showImages`
+* The default text style now matches the app's Material `TextTheme.bodyText2` (Fixes [#18](https://github.com/Sub6Resources/flutter_html/issues/18)).
+* Requires Flutter v1.17.0 or greater
+* Fixed quite a few issues with `img`
+* Added a fancy new `style` attribute (this should be used in place of the deprecated styling parameters).
+
+## [1.0.0-pre.1] - December 27, 2019
+
+* For a list of pre-release changes, including several BREAKING CHANGES, see release notes for 1.0.0 above.
+
+## [0.11.1] - December 14, 2019:
+
+* Add support for `AssetImage`s using the `asset:` prefix ([#162](https://github.com/Sub6Resources/flutter_html/pull/162)).
+
+## [0.11.0] - September 10, 2019:
+
+* Make it so `width=100%` doesn't throw error. Fixes [#118](https://github.com/Sub6Resources/flutter_html/issues/118).
+* You can now set width and/or height in `ImageProperties` to negative to ignore the `width` and/or `height` values from the html. Fixes [#97](https://github.com/Sub6Resources/flutter_html/issues/97)
+* The `img` `alt` property now renders correctly when the image fails to load and with the correct style. Fixes [#96](https://github.com/Sub6Resources/flutter_html/issues/96)
+* Add partial support for `sub` tag.
+* Add new option: `shrinkToFit` ([#148](https://github.com/Sub6Resources/flutter_html/pull/148)). Fixes [#75](https://github.com/Sub6Resources/flutter_html/issues/75).
+
+## [0.10.4] - June 22, 2019:
+
+* Add support for `customTextStyle` to block and specialty HTML elements.
+
+## [0.10.3] - June 20, 2019:
+
+* Add `src` to the `onImageTap` callback ([#93](https://github.com/Sub6Resources/flutter_html/pull/93))
+
+## [0.10.2] - June 19, 2019:
+
+* Add `customTextAlign` property ([#112](https://github.com/Sub6Resources/flutter_html/pull/112))
+* Use `tryParse` instead of `parse` for image width and height attributes so that `%` values are ignored safely. Fixes [#98](https://github.com/Sub6Resources/flutter_html/issues/98)
+
+## [0.10.1] - May 20, 2019:
+
+* Image properties and onImageTap for the richTextParser, plus some fixes ([#90](https://github.com/Sub6Resources/flutter_html/pull/90))
+* Hotfix 1 (June 6, 2019): Fixes [#100](https://github.com/Sub6Resources/flutter_html/issues/100)
+
+## [0.10.0] - May 18, 2019:
+
+* **BREAKING:** `useRichText` now defaults to `true`
+* Support for `aside`, `bdi`, `big`, `cite`, `data`, `ins`, `kbd`, `mark`, `nav`, `noscript`, `q`, `rp`, `rt`, `ruby`, `s`, `samp`, `strike`, `template`, `time`, `tt`, and `var` added to `RichText` parser.
+
+## [0.9.9] - May 17, 2019:
+
+* Fixes extra padding issue ([#87](https://github.com/Sub6Resources/flutter_html/issues/87))
+
+## [0.9.8] - May 14, 2019:
+
+* Add support for `address` tag in `RichText` parser.
+
+## [0.9.7] - May 13, 2019:
+* Added onImageError callback
+* Added custom textstyle and edgeinsets callback ([#72](https://github.com/Sub6Resources/flutter_html/pull/72))
+* Update dependency versions ([#84](https://github.com/Sub6Resources/flutter_html/issues/84))
+* Fixes [#82](https://github.com/Sub6Resources/flutter_html/issues/82) and [#86](https://github.com/Sub6Resources/flutter_html/issues/86)
+
+## [0.9.6] - March 11, 2019:
+
+* Fix whitespace issue. ([#59](https://github.com/Sub6Resources/flutter_html/issues/59))
+
+## [0.9.5] - March 11, 2019:
+
+* Add support for `span` in `RichText` parser. ([#61](https://github.com/Sub6Resources/flutter_html/issues/61))
+* Adds `linkStyle` attribute. ([#70](https://github.com/Sub6Resources/flutter_html/pull/70))
+* Adds tests for `header`, `hr`, and `i` ([#62](https://github.com/Sub6Resources/flutter_html/issues/62))
+
+## [0.9.4] - February 5, 2019:
+
+* Fixes `table` error in `RichText` parser. ([#58](https://github.com/Sub6Resources/flutter_html/issues/58))
+
+## [0.9.3] - January 31, 2019:
+
+* Adds support for base64 encoded images
+
+## [0.9.2] - January 31, 2019:
+
+* Adds partial support for deprecated `font` tag.
+
+## [0.9.1] - January 31, 2019:
+
+* Adds full support for `sub` and `sup`. ([#46](https://github.com/Sub6Resources/flutter_html/pull/46))
+* Fixes weak warning caught by Pub analysis ([#54](https://github.com/Sub6Resources/flutter_html/issues/54))
+
+## [0.9.0] - January 31, 2019:
+
+* Adds an alternate `RichText` parser and `useRichText` parameter. ([#37](https://github.com/Sub6Resources/flutter_html/pull/37))
+
+## [0.8.2] - November 1, 2018:
+
+* Removes debug prints.
+
 ## [0.8.1] - October 19, 2018:
 
 * Adds `typedef` for `onLinkTap` function.

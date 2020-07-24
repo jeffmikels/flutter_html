@@ -1,91 +1,122 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/html_parser.dart';
+import 'package:flutter_html/style.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_html/flutter_html.dart';
 
 void main() {
-  test('Checks that `parse` does not throw an exception', () {
-    final elementList = HtmlParser(width: 42.0).parse("<b>Bold Text</b>");
-    expect(elementList, isNotNull);
-  });
-
-  testWidgets('Tests some plain old text', (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
+  testWidgets("Check that default parser does not fail on empty data",
+      (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
         home: Scaffold(
-      body: Html(data: "This is some plain text"),
-    )));
-
-    expect(find.text("This is some plain text"), findsOneWidget);
-  });
-
-  testWidgets('Tests that a <b> element gets rendered correctly',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: Html(
-          data: "<b>Bold Text</b>",
+          body: Html(
+            data: "",
+          ),
         ),
       ),
-    ));
-
-    expect(find.byType(RichText), findsOneWidget);
+    );
   });
 
-  testWidgets(
-      'Tests that a combination of elements and text nodes gets rendered',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: Html(
-          data: "<b>Bold Text</b> and plain text",
-        ),
-      ),
-    ));
+  testNewParser();
+}
 
-    expect(find.byType(RichText), findsNWidgets(2));
-    expect(find.text(" and plain text"), findsOneWidget);
+void testNewParser() {
+  test("Html Parser works correctly", () {
+    HtmlParser.parseHTML("<b>Hello, World!</b>");
   });
 
-  testWidgets('Tests that a <i> element gets rendered correctly',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: Html(
-          data: "<b>Bold Text</b>, <i>Italic Text</i> and plain text",
-        ),
-      ),
-    ));
-
-    expect(find.byType(RichText), findsNWidgets(4));
-    expect(find.text(", "), findsOneWidget);
-    expect(find.text(" and plain text"), findsOneWidget);
+  test("lexDomTree works correctly", () {
+    StyledElement tree = HtmlParser.lexDomTree(
+        HtmlParser.parseHTML(
+            "Hello! <b>Hello, World!</b><i>Hello, New World!</i>"),
+        [],
+        []);
+    print(tree.toString());
   });
 
-  testWidgets('Tests that nested elements get rendered correctly',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: Html(
-          data:
-              "<b>Bold Text and <i>Italic bold text and <u>Underlined italic bold text</u></i></b>",
-        ),
-      ),
-    ));
-
-    expect(find.byType(RichText), findsNWidgets(3));
+  test("InteractableElements work correctly", () {
+    StyledElement tree = HtmlParser.lexDomTree(
+        HtmlParser.parseHTML(
+            "Hello, World! <a href='https://example.com'>This is a link</a>"),
+        [],
+        []);
+    print(tree.toString());
   });
 
-  testWidgets('Tests that the header elements (h1-h6) get rendered correctly',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: Html(
-          data:
-              "<h1>H1</h1><h2>H2</h2><h3>H3</h3><h4>H4</h4><h5>H5</h5><h6>H6</h6>",
-        ),
-      ),
-    ));
+  test("ContentElements work correctly", () {
+    StyledElement tree = HtmlParser.lexDomTree(
+        HtmlParser.parseHTML("<img src='https://image.example.com' />"),
+        [],
+        []);
+    print(tree.toString());
+  });
 
-    expect(find.byType(RichText), findsNWidgets(6));
+  test("Nesting of elements works correctly", () {
+    StyledElement tree = HtmlParser.lexDomTree(
+        HtmlParser.parseHTML(
+            "<div><div><div><div><a href='link'>Link</a><div>Hello, World! <b>Bold and <i>Italic</i></b></div></div></div></div></div>"),
+        [],
+        []);
+    print(tree.toString());
+  });
+
+  test("Video Content Source Parser works correctly", () {
+    ReplacedElement videoContentElement =
+        parseReplacedElement(HtmlParser.parseHTML("""
+      <video width="320" height="240" controls>
+       <source src="movie.mp4" type="video/mp4">
+       <source src="movie.ogg" type="video/ogg">
+       Your browser does not support the video tag.
+      </video>
+    """).getElementsByTagName("video")[0]);
+
+    expect(videoContentElement, isA<VideoContentElement>());
+    if (videoContentElement is VideoContentElement) {
+      expect(videoContentElement.showControls, equals(true),
+          reason: "Controls isn't working");
+      expect(videoContentElement.src, hasLength(2),
+          reason: "Not enough sources...");
+    }
+  });
+
+  test("Audio Content Source Parser works correctly", () {
+    ReplacedElement audioContentElement =
+        parseReplacedElement(HtmlParser.parseHTML("""
+      <audio controls>
+        <source src='audio.mp3' type='audio/mpeg'>
+        <source src='audio.wav' type='audio/wav'>
+        Your browser does not support the audio tag.
+      </audio>
+    """).getElementsByTagName("audio")[0]);
+    expect(audioContentElement, isA<AudioContentElement>());
+    if (audioContentElement is AudioContentElement) {
+      expect(audioContentElement.showControls, equals(true),
+          reason: "Controls isn't working");
+      expect(audioContentElement.src, hasLength(2),
+          reason: "Not enough sources...");
+    }
+  });
+
+  test("Test style merging", () {
+    Style style1 = Style(
+      display: Display.BLOCK,
+      fontWeight: FontWeight.bold,
+    );
+
+    Style style2 = Style(
+      before: "* ",
+      direction: TextDirection.rtl,
+      fontStyle: FontStyle.italic,
+    );
+
+    Style finalStyle = style1.merge(style2);
+
+    expect(finalStyle.display, equals(Display.BLOCK));
+    expect(finalStyle.before, equals("* "));
+    expect(finalStyle.direction, equals(TextDirection.rtl));
+    expect(finalStyle.fontStyle, equals(FontStyle.italic));
+    expect(finalStyle.fontWeight, equals(FontWeight.bold));
   });
 }
